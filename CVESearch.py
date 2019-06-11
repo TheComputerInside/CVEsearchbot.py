@@ -23,7 +23,7 @@ MIN_SCREENS = 1
 MAX_SCREENS = 1
 
 #manual version numbers
-vernum= "0.12"
+vernum= "0.13"
 branch = "current-stable"
 
 
@@ -104,24 +104,8 @@ async def on_message(message):
             embed3.add_field(name=d.entries[1].title, value=d.entries[1].description, inline=False)
             embed3.add_field(name=d.entries[2].title, value=d.entries[2].description, inline=False)
             await message.channel.send(content=None, embed=embed3)
-
-    if message.content == "~feed2":
-        
-        embed=discord.Embed()
-        embed.add_field(name=d.entries[4].title, value=d.entries[3].description, inline=False)
-        embed.add_field(name=d.entries[5].title, value=d.entries[4].description, inline=False)
-        embed.add_field(name=d.entries[6].title, value=d.entries[5].description, inline=False)
-        embed.add_field(name=d.entries[7].title, value=d.entries[6].description, inline=False)
-        try:
-            await message.channel.send(content=None, embed=embed)
-        except:
-            embed2=discord.Embed()
-            embed2.add_field(name=d.entries[4].title, value=d.entries[3].description, inline=False)
-            embed2.add_field(name=d.entries[5].title, value=d.entries[4].description, inline=False)
-            embed2.add_field(name=d.entries[6].title, value=d.entries[5].description, inline=False)
-            await message.channel.send(content=None, embed=embed2)
             
-    if message.content == "~feed3":
+    if message.content == "~feed2":
         
         embed=discord.Embed()
         embed.add_field(name=d.entries[8].title, value=d.entries[6].description, inline=False)
@@ -160,7 +144,7 @@ async def on_message(message):
                     
     if message.content.startswith ("~help"):
         text = message.content
-        prefix = '~help '
+        prefix = "~help "
         text = text.replace(prefix, "", 1)
         #more debug strings
         print(text)
@@ -178,8 +162,7 @@ async def on_message(message):
         help4 = "~shodan-search"
         help5 = "~shodansafari"
         help6 = "~shdtokens"
-        help7 = "~help"
-        help8 = "~docs"
+        help7 = "~docs"
         if text == help0:
             feedhelpembed=discord.Embed(color=0xffc20d)
             feedhelpembed.add_field(name=usagetitle, value=feedtt, inline=False)
@@ -209,10 +192,6 @@ async def on_message(message):
             shdtkembed.add_field(name=usagetitle, value=shdtokenstt, inline=False)
             await message.channel.send(content=None, embed=shdtkembed)
         elif text == help7:
-            helpembed0=discord.Embed(color=0xffc20d)
-            helpembed0.add_field(name=usagetitle, value=helptt, inline=False)
-            await message.channel.send(content=None, embed=helpembed0)
-        elif text == help8:
             docsembed=discord.Embed(color=0xffc20d)
             docsembed.add_field(name=usagetitle, value=docstt, inline=False)
             await message.channel.send(content=None, embed=docsembed)
@@ -462,6 +441,40 @@ async def on_message(message):
         verembed.add_field(name=versionstr, value=vernum, inline=True)
         verembed.add_field(name=branchstr, value=branch, inline=True)
         await message.channel.send(content=None, embed=verembed)
+
+    if message.content.startswith ("~msbulletin"):
+        msgbuffer = message.content
+        prefix = "~msbulletin "
+        msgbuffer = msgbuffer.replace(prefix, "", 1)
+        print(msgbuffer)
+        try:
+            msembed=discord.Embed(color=0x00d910)
+            msbuffer0 = cve.id(msgbuffer)
+            msbuffer1 = msbuffer0.get('msbulletin')
+            print(msbuffer1)
+            msdesc = msbuffer1[0].get('title')
+            print(msdesc)
+            msid = msbuffer1[0].get('bulletin_id')
+            print(msid)
+            msurl = msbuffer1[0].get('bulletin_url')
+            print(msurl)
+            msurl1 = msbuffer1[0].get('knowledgebase_url')
+            print(msurl1)
+            msknid = msbuffer1[0].get('knowledgebase_id')
+            print(msknid)
+            msembed.add_field(name=msid, value=msdesc, inline=True)
+            msembed.add_field(name=msknid, value=msurl1, inline=True)
+            msembed.set_footer(text=msurl)
+
+            await message.channel.send(content=None, embed=msembed)
+        except:
+            msembed=discord.Embed(color=0x00d910)
+            mserrortitle = "Error"
+            mserror = "CVE entry contains no msbulletin information"
+            msembed.add_field(name=mserrortitle, value=mserror, inline=True)
+            await message.channel.send(content=None, embed=msembed)
+
+    
 
 #Running the discord bot        
 client.run(TOKEN)
