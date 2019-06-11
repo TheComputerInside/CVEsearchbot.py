@@ -1,2 +1,2 @@
 # CVEsearchbot.py
-A bot that searches for CVEs, metasploit entries, and shodan. 
+A bot that searches CVEs, metasploit entries, and shodan. 
