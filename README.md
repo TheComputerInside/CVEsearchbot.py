@@ -10,3 +10,19 @@ whilst also trying to make something useful.
 
 I've learned so much just doing this(especially about dictionaries), and I'll keep learning as long
 as I'm maintaining it. 
+
+
+You will need the following dependancies:
+
+discord (pip install discord.py)
+
+feedparser (pip install feedparser)
+
+shodan (pip install shodan)
+
+and pycvesearch (https://github.com/cve-search/PyCVESearch)
+
+The rest should be a part of the core python install.
+
+
+This script uses Python 3 and should be compatible with Python 3.6+
