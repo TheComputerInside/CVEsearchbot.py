@@ -24,5 +24,8 @@ and pycvesearch (https://github.com/cve-search/PyCVESearch)
 
 The rest should be a part of the core python install.
 
+You will also need an account from https://shodan.io to use the shodan features, and
+a discord bot token from https://discordapp.com/developers/applications/me in order
+for the script to work.
 
 This script uses Python 3 and should be compatible with Python 3.6+
