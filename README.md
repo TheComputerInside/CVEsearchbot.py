@@ -12,7 +12,9 @@ I've learned so much just doing this(especially about dictionaries), and I'll ke
 as I'm maintaining it. 
 
 
-You will need the following dependancies:
+
+
+### You will need the following dependancies:
 
 discord (pip install discord.py)
 
