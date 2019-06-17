@@ -7,6 +7,7 @@ import os
 import shodan.helpers as helpers
 import sys
 import base64
+import json
 
 
 # The Computer Inside presents:
@@ -23,7 +24,7 @@ MIN_SCREENS = 1
 MAX_SCREENS = 1
 
 #manual version numbers
-vernum= "0.13"
+vernum= "0.13.1"
 branch = "current-stable"
 
 
@@ -146,70 +147,33 @@ async def on_message(message):
         text = message.content
         prefix = "~help "
         text = text.replace(prefix, "", 1)
-        #more debug strings
+        #debug
         print(text)
-        # This is pretty gross, but let me explain.
-        # Since this is a discord bot, using actual
-        # "help entry" libs doesn't seem to work here.
-        # I am forced to do this manually. However, I will
-        # be cleaning this up for 0.20 with a "tooltip"
-        # that will also contain help entries. For now,
-        # however, this will work fine. 
-        help0 = "~feed"
-        help1 = "~cvesearch"
-        help2 = "~metasploit"
-        help3 = "~exploitdb"
-        help4 = "~shodan-search"
-        help5 = "~shodansafari"
-        help6 = "~shdtokens"
-        help7 = "~docs"
-        if text == help0:
-            feedhelpembed=discord.Embed(color=0xffc20d)
-            feedhelpembed.add_field(name=usagetitle, value=feedtt, inline=False)
-            await message.channel.send(content=None, embed=feedhelpembed)
-        elif text == help1:
-            cvesearchhelpembed=discord.Embed(color=0xffc20d)
-            cvesearchhelpembed.add_field(name=usagetitle, value=cvesrchtt, inline=False)
-            await message.channel.send(content=None, embed=cvesearchhelpembed)
-        elif text == help2:
-            metasploitembed=discord.Embed(color=0xffc20d)
-            metasploitembed.add_field(name=usagetitle, value=metasploittt, inline=False)
-            await message.channel.send(content=None, embed=metasploitembed)
-        elif text == help3:
-            exploitdbembed=discord.Embed(color=0xffc20d)
-            exploitdbembed.add_field(name=usagetitle, value=exploitdbtt, inline=False)
-            await message.channel.send(content=None, embed=exploitdbembed)
-        elif text == help4:
-            shdsrchembed=discord.Embed(color=0xffc20d)
-            shdsrchembed.add_field(name=usagetitle, value=shodansrchtt, inline=False)
-            await message.channel.send(content=None, embed=shdsrchembed)
-        elif text == help5:
-            shdsfembed=discord.Embed(color=0xffc20d)
-            shdsfembed.add_field(name=usagetitle, value=shodansftt, inline=False)
-            await message.channel.send(content=None, embed=shdsfembed)
-        elif text == help6:
-            shdtkembed=discord.Embed(color=0xffc20d)
-            shdtkembed.add_field(name=usagetitle, value=shdtokenstt, inline=False)
-            await message.channel.send(content=None, embed=shdtkembed)
-        elif text == help7:
-            docsembed=discord.Embed(color=0xffc20d)
-            docsembed.add_field(name=usagetitle, value=docstt, inline=False)
-            await message.channel.send(content=None, embed=docsembed)
+        
+        # EDIT: Help is kinda broken now, but
+        # The good news is that there is 
+        # now just cleaner code as a result.
+        # You may want to reference the docs
+        # until I get a file together for
+        # the help entries. It was 0630
+        # when I wrote this after a long night.
+        helpembed=discord.Embed(color=0xffc20d)
+        helpfile = open('tooltips.txt', 'r')
+        helpdict = json.loads(helpfile.read())
+        #debug, but I've commented this out since
+        # it gets annoying really fast
+        # print(helpdict)
+        try:
+            helpdict_sent = helpdict.get(text)
+        except:
+            errortitle = "Error"
+            error = "no command found. Please try again?"
+            errorembed=discord.Embed()
+            errorembed.add_field(name=errortitle, value=error, inline=False)
+            await message.channel.send(content=None, embed=errorembed)
         else:
-            #additional version string
-            help9 = "Version:"
-            help91 = vernum
-            embed=discord.Embed(color=0xffc20d)
-            embed.add_field(name=help0, value=feedhelp, inline=False)
-            embed.add_field(name=help1, value=cvesrchhelp, inline=False)
-            embed.add_field(name=help2, value=metasploithelp, inline=False)
-            embed.add_field(name=help3, value=exploitdbhelp, inline=False)
-            embed.add_field(name=help4, value=shodansrchhelp, inline=False)
-            embed.add_field(name=help5, value=shodansfhelp, inline=False)
-            embed.add_field(name=help6, value=shdtokenshelp, inline=False)
-            embed.add_field(name=help7, value=helphelp, inline=False)
-            embed.add_field(name=help8, value=docshelp, inline=False)
-            await message.channel.send(content=None, embed=embed)
+            helpembed.add_field(name=text, value=helpdict_sent, inline=False)
+            await message.channel.send(content=None, embed=helpembed)
 
     if message.content.startswith ("~metasploit"):
         #is that an actual color? It is!
@@ -261,7 +225,7 @@ async def on_message(message):
 
     if message.content == "~docs":
         #Here are the official docs, if you want to flip through them
-        embed=discord.Embed(title="Official(tm) Documentation", url="https://docs.google.com/document/d/1gACkPX2ywayYizmOtXbWMCti49DbL3w2FSH1X1Ja-zU/edit?usp=sharing", description="Contains commands, Shodan filters, and the changelog.", color=0x008000)
+        embed=discord.Embed(title="Official(™) Documentation", url="https://github.com/TheComputerInside/CVEsearchbot.py/wiki", description="Contains commands, Shodan filters, and the changelog.", color=0x008000)
         await message.channel.send(content=None, embed=embed)
 
     if message.content.startswith ("~shodan-search"):
