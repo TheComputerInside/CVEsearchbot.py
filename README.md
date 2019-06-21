@@ -12,6 +12,8 @@ I've learned so much just doing this(especially about dictionaries), and I'll ke
 as I'm maintaining it. 
 
 
+Also: Please read the following page if you are currently having issues with the cvesearch command:
+https://github.com/TheComputerInside/CVEsearchbot.py/wiki/Fixes-and-news%3F
 
 
 ### You will need the following dependancies:
