@@ -24,7 +24,7 @@ MIN_SCREENS = 1
 MAX_SCREENS = 1
 
 #manual version numbers
-vernum= "0.13.1"
+vernum= "0.13.2 [does this count as a hotfix?]"
 branch = "current-stable"
 
 
@@ -39,29 +39,6 @@ cve = CVESearch()
 shodan = Shodan('')
 TOKEN = 'Discord token!'
         
-#help tooltips (it's easier not to ask)
-
-usagetitle = "Usage:"
-feedtt = "~feed, ~feed2, ~feed3"
-feedhelp = "Gets the most recent CVEs from the feed"
-cvesrchtt = "~cvesearch CVE-YEAR-###### \n Searches for and displays the specified CVE. You must use the CVE ID format when using this command to avoid errors."
-cvesrchhelp = "Searches for and displays the specified CVE"
-metasploittt = "~metasploit CVE-YEAR-###### \n Gets the metasploit module for the specified CVE, if any"
-metasploithelp = "Gets the metasploit module for the specified CVE, if any"
-shodansrchtt = "~shodan-search filter:\"param\""
-shodansrchhelp = "Gets information for a random machine on Shodan. Also sends a screenshot if the entry has one. Based on parameters"
-shodansfhelp = "Gets a screenshot for a random machine on shodan based on parameters"
-shodansftt = "~shodansafari filter:\"param\" \n See the documentation for a more detailed overview."
-helptt = "~help [command(optional)]"
-helphelp = "shows the help dialog. If a command is specified, the tooltip for the command is shown instead"
-docstt = "~docs"
-docshelp = "Shows the official(tm) documentation"
-exploitdbtt = "~exploitdb CVE-YEAR-###### \n Finds and posts the exploit-db entry for the specified vulnerability."
-exploitdbhelp = "Shows the exploit-db entry for the specified CVE, if any"
-shdtokenstt = "~shdtokens \n Shows how many Shodan query credits you have left. \n Credits regenerate each month."
-shdtokenshelp = "Shows how many Shodan query credits you have left. \n Credits regenerate each month."
-
-
 
 #giving some notification that the discord bot is ready 
 @client.event
@@ -135,13 +112,24 @@ async def on_message(message):
         #the CVESearch lib is incredibly helpful
         #for this. Whilst bare-bones, I don't actually
         #have to parse JSON unless I want to get more
-        #from the API itself. 
-        var4 = cve.id(text)
-        var5 = var4.get('summary')
-        print(var5)
-        embed.add_field(name=text, value=var5, inline=False)
+        #from the API itself.
         
-        await message.channel.send(content=None, embed=embed)
+        try:
+            cveidbuffer = cve.id(text)
+            cveinfo = cveidbuffer.get('summary')
+        except Exception as err:
+            cveerrorembed=discord.Embed(title="cve.circl.lu error", description="an error has occured in getting details for the specified CVE. This could be an issue with DNS (~emergfixes) or just something wrong with the dependancy itself. Please check github for any fixes and/or check to see if any cve.circl.lu is still up", color=0xff0000)
+            cveerrorembed.set_footer(text=err)
+            await message.channel.send(content=None, embed=cveerrorembed)
+
+        try:            
+            embed.add_field(name=text, value=cveinfo, inline=False)
+            await message.channel.send(content=None, embed=embed)
+            
+        except Exception as errthesequel:
+            print("An error has occured (likely something to do with the CVE exception error routine firing?)")
+            print("Ignoring, but please keep the following error around:")
+            print(errthesequel)
                     
     if message.content.startswith ("~help"):
         text = message.content
@@ -437,6 +425,17 @@ async def on_message(message):
             mserror = "CVE entry contains no msbulletin information"
             msembed.add_field(name=mserrortitle, value=mserror, inline=True)
             await message.channel.send(content=None, embed=msembed)
+    
+     if message.content.startswith ("~emergfixes"):
+        # "Emergency fixes"
+        # Otherwise known as a log for
+        # all of the error handling
+        # I've done as a result of issues with
+        # a specific dependancy or something.
+
+        fixesembed=discord.Embed(title="Fixes and News", url="https://github.com/TheComputerInside/CVEsearchbot.py/wiki/Fixes-and-news%3F", description="and suddenly... a github page dedicated to a singular issue!", color=0x0000ff)
+        fixesembed.set_footer(text="https://isitdns.com/")
+        await message.channel.send(content=None, embed=fixesembed)
 
     
 
