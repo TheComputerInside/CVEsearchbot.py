@@ -11,10 +11,11 @@ whilst also trying to make something useful.
 I've learned so much just doing this(especially about dictionaries), and I'll keep learning as long
 as I'm maintaining it. 
 
-
-Also: Please read the following page if you are currently having issues with the cvesearch command:
-https://github.com/TheComputerInside/CVEsearchbot.py/wiki/Fixes-and-news%3F
-
+Note: Unfortunately I've noticed the script acting really REALLY sluggish, and that probably means
+that there's gonna be a MASSIVE rewrite coming up to address this. I suspect it would be infinitely
+easier to implement yaspy or something specifically for the purpose of trying to speed it up as I 
+think that the entire script being loaded into memory is probably not particularly optimal. 
+Especially considering the nature of Python as it stands. 
 
 ### You will need the following dependancies:
 
@@ -31,5 +32,7 @@ The rest should be a part of the core python install.
 You will also need an account from https://shodan.io to use the shodan features, and
 a discord bot token from https://discordapp.com/developers/applications/me in order
 for the script to work.
+
+(soon I will just make a dependency installer so you won't have to mess with this)
 
 This script uses Python 3 and should be compatible with Python 3.6+
