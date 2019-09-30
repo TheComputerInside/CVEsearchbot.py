@@ -1,0 +1,9 @@
+v0.20-prerelease
+
+- Removed ~feed
+- Changed ~shodan-search to ~shodan
+- Fixed ~help returning 'none' when no specific command was specified.
+- Removed ~emergfixes
+- Comment cleanup
+- Removed feedreader dependency
+- Removed libraries that are no longer required.

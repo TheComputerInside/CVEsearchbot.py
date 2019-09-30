@@ -1,14 +1,8 @@
 import discord
-import feedparser
-import urllib.request
 from pycvesearch import CVESearch
 from shodan import Shodan
-import os
-import shodan.helpers as helpers
-import sys
 import base64
 import json
-
 
 # The Computer Inside presents:
 # The CVESearch.py discord bot!
@@ -18,85 +12,40 @@ import json
 # before continuing.(use [~docs]!)
 
 
-#minimum and maximum screenshots we
-#want shodan to send
+# minimum and maximum screenshots we
+# want shodan to send
 MIN_SCREENS = 1
 MAX_SCREENS = 1
 
-#manual version numbers
-vernum= "0.13.2 [does this count as a hotfix?]"
-branch = "current-stable"
+# manual version numbers
+vernum= "0.20"
+branch = "current"
 
 
-#library declarations
+# library declarations
 client = discord.Client()
 cve = CVESearch()
-
-
-
-#tokens! Put your API keys here. For discord, make sure you go to your
-#devpage (https://discordapp.com/developers/applications/) to get your key
 shodan = Shodan('')
-TOKEN = 'Discord token!'
-        
+
+
+
+
+# discord bot token goes here
+TOKEN = ''
+
 
 #giving some notification that the discord bot is ready 
 @client.event
 async def on_ready():
-    print("////rdy!!////")
+    print("rdy!!")
     
     
 
 @client.event
 async def on_message(message):
-    #wow look at that! This is where the feed comes from
-    d=feedparser.parse('https://www.cvedetails.com/vulnerability-feed.php')
     
-    #make it so the bot doesn't reply to itself 
     if message.author == client.user:
         return
-
-    #Explanation about these:
-    #These are like this since discord decided to add
-    #a 2000 char limit to all messages. If unhandled,
-    #it will return a fake 400 error which just means
-    #that it went over. Attempts to try and fit more than
-    #3-4 entries per command have all but failed.
-
-    #This is why I implemented the try and except statements.
-    #If four is too much, it'll just cut it down to three.
-    if message.content == "~feed":
-        #these look kinda gross, but you should have seen
-        #the original code. This is crystal compared
-        #to the garbage in v0.1
-        embed2=discord.Embed()
-        embed2.add_field(name=d.entries[0].title, value=d.entries[0].description, inline=False)
-        embed2.add_field(name=d.entries[1].title, value=d.entries[1].description, inline=False)
-        embed2.add_field(name=d.entries[2].title, value=d.entries[2].description, inline=False)
-        embed2.add_field(name=d.entries[3].title, value=d.entries[3].description, inline=False)
-        try:
-            await message.channel.send(content=None, embed=embed2)
-        except:
-            embed3=discord.Embed()
-            embed3.add_field(name=d.entries[0].title, value=d.entries[0].description, inline=False)
-            embed3.add_field(name=d.entries[1].title, value=d.entries[1].description, inline=False)
-            embed3.add_field(name=d.entries[2].title, value=d.entries[2].description, inline=False)
-            await message.channel.send(content=None, embed=embed3)
-            
-    if message.content == "~feed2":
-        
-        embed=discord.Embed()
-        embed.add_field(name=d.entries[8].title, value=d.entries[6].description, inline=False)
-        embed.add_field(name=d.entries[9].title, value=d.entries[7].description, inline=False)
-        embed.add_field(name=d.entries[10].title, value=d.entries[8].description, inline=False)
-        embed.add_field(name=d.entries[11].title, value=d.entries[9].description, inline=False)
-        try:
-            await message.channel.send(content=None, embed=embed)
-        except:
-            embed=discord.Embed()
-            embed.add_field(name=d.entries[8].title, value=d.entries[6].description, inline=False)
-            embed.add_field(name=d.entries[9].title, value=d.entries[7].description, inline=False)
-            embed.add_field(name=d.entries[10].title, value=d.entries[8].description, inline=False)
 
 
     if message.content.startswith ("~cvesearch"):
@@ -104,30 +53,29 @@ async def on_message(message):
         text = message.content
         prefix = "~cvesearch "
         print(message.content)
-        #this is how we remove the command so we
-        #can actually search for the vulns we
-        #want
+        # this is how we remove the command so we
+        # can actually search for the vulns we
+        # want
         text = text.replace(prefix, "", 1)
         print(text)
-        #the CVESearch lib is incredibly helpful
-        #for this. Whilst bare-bones, I don't actually
-        #have to parse JSON unless I want to get more
-        #from the API itself.
-        
+        # the CVESearch lib is incredibly helpful
+        # for this. Whilst bare-bones, I don't actually
+        # have to parse JSON unless I want to get more
+        # from the API itself.
         try:
-            cveidbuffer = cve.id(text)
-            cveinfo = cveidbuffer.get('summary')
+            var4 = cve.id(text)
+            var5 = var4.get('summary')
         except Exception as err:
-            cveerrorembed=discord.Embed(title="cve.circl.lu error", description="an error has occured in getting details for the specified CVE. This could be an issue with DNS (~emergfixes) or just something wrong with the dependancy itself. Please check github for any fixes and/or check to see if any cve.circl.lu is still up", color=0xff0000)
+            cveerrorembed=discord.Embed(title="cve.circl.lu error", description="an error has occured in getting details for the specified CVE.", color=0xff0000)
             cveerrorembed.set_footer(text=err)
             await message.channel.send(content=None, embed=cveerrorembed)
 
         try:            
-            embed.add_field(name=text, value=cveinfo, inline=False)
-            await message.channel.send(content=None, embed=embed)
+            embed.add_field(name=text, value=var5, inline=False)
             
+            await message.channel.send(content=None, embed=embed)
         except Exception as errthesequel:
-            print("An error has occured (likely something to do with the CVE exception error routine firing?)")
+            print("An error has occured (likely something to do with the CVE exception error handling firing?)")
             print("Ignoring, but please keep the following error around:")
             print(errthesequel)
                     
@@ -135,22 +83,22 @@ async def on_message(message):
         text = message.content
         prefix = "~help "
         text = text.replace(prefix, "", 1)
-        #debug
+
         print(text)
-        
-        # EDIT: Help is kinda broken now, but
-        # The good news is that there is 
-        # now just cleaner code as a result.
-        # You may want to reference the docs
-        # until I get a file together for
-        # the help entries. It was 0630
-        # when I wrote this after a long night.
+        # because the prefix removal sometimes results
+        # in an empty message, it seems like the replace-
+        # ment doesn't always work. ~help should return a
+        # list of commmands by itself now, and still cont
+        # inue to work as it did back in v0.13.2.
+
+        if text == "~help":
+            text = "commands"
+        print(text)
+
         helpembed=discord.Embed(color=0xffc20d)
         helpfile = open('tooltips.txt', 'r')
         helpdict = json.loads(helpfile.read())
-        #debug, but I've commented this out since
-        # it gets annoying really fast
-        # print(helpdict)
+        print(helpdict)
         try:
             helpdict_sent = helpdict.get(text)
         except:
@@ -162,26 +110,29 @@ async def on_message(message):
         else:
             helpembed.add_field(name=text, value=helpdict_sent, inline=False)
             await message.channel.send(content=None, embed=helpembed)
-
+        
     if message.content.startswith ("~metasploit"):
-        #is that an actual color? It is!
-        #it looks so pretty now!
+        # As of version 0.12, all discord embeds will contain colours
+        # to help spot differences between modules.
         embed=discord.Embed(color=0x4f4fff)
         text = message.content
-        #I should probably be using a string literal
-        #for this.
         prefix = "~metasploit "
         print(message.content)
         text = text.replace(prefix, "", 1)
         print(text)
         var4 = cve.id(text)
-        #This is pretty gross as well, but
-        #as it turns out, metasploit
-        #entries can *also* become quite
-        #long-winded. Discord hates this
-        #and returns 400s because it's
-        #discord and they don't care about
-        #your problems with their API
+
+        # As it turns out, metasploit
+        # entries can *also* become quite
+        # long-winded. Discord hates this
+        # and returns 400s because it's
+        # discord and they don't care about
+        # your problems with their API.
+
+        # Plan for v0.22: If the text
+        # is too long for discord,
+        # toss it to pastebin and drop
+        # a link instead.
         
         try:
             var5 = var4.get('metasploit')
@@ -212,18 +163,12 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed1)
 
     if message.content == "~docs":
-        #Here are the official docs, if you want to flip through them
+
         embed=discord.Embed(title="Official(™) Documentation", url="https://github.com/TheComputerInside/CVEsearchbot.py/wiki", description="Contains commands, Shodan filters, and the changelog.", color=0x008000)
         await message.channel.send(content=None, embed=embed)
 
-    if message.content.startswith ("~shodan-search"):
-        #ah yes. My favorite feature so far.
-        #I've made a mistake in assuming that you
-        #just want entries with screenshots
-        #so sometimes the code will fail
-        #if you try and get like an ssh server
-        #or something. This is high priority
-        #and I plan on getting it out ASAP
+    if message.content.startswith ("~shodan"):
+
         tokenmsg = "Tokens Left:"
         sdinfobuffer0 = shodan.info()
         tokensleft = sdinfobuffer0.get('query_credits')
@@ -232,10 +177,10 @@ async def on_message(message):
             embed=discord.Embed(color=0xff097d)
             embed.set_footer(text="Powered by the Shodan API. Thanks Shodan!")
             text = message.content
-            prefix = "~shodan-search "
+            prefix = "~shodan "
             text = text.replace(prefix, "", 1)
             try:
-                #ew.
+                # ew.
                 searchdict =  shodan.search(text,page=1,limit=1,minify=False)
                 searchbuffer0 = searchdict.get('matches')
                 searchIP = searchbuffer0[0].get('ip_str')
@@ -251,13 +196,11 @@ async def on_message(message):
                 embed.add_field(name=searchproduct, value=searchinfo, inline=True)
                 embed.add_field(name=tokenmsg, value=tokensleft, inline=False)
                 try:
-                    #so this is pretty disgusting, but
-                    #required as well.
-                    #Screenshots in the shodan API
-                    #are encoded in base64, so we
-                    #have to dump those to disk
-                    #before sending them off
-                    #to discord.
+                    # Screenshots in the shodan API
+                    # are encoded in base64 as a blob,
+                    # so we have to dump those
+                    # to disk before sending them
+                    # off to discord.
                     image0 = searchbuffer0[0].get('opts')
                     image1 = image0.get('screenshot')
                     image2 = image1.get('data')
@@ -283,8 +226,6 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed)
 
     if message.content.startswith ("~shodansafari"):
-        #this is literally copy-pasted from the previous
-        #entry. I just wanted to get the screenshot :'(
         tokenmsg = "Tokens Left:"
         sdinfobuffer1 = shodan.info()
         tokensleft = sdinfobuffer1.get('query_credits')
@@ -293,9 +234,9 @@ async def on_message(message):
             params0 = message.content
             prefix = "~shodansafari"
             params0 = params0.replace(prefix, "")
-            #interestingly, Shodan's API doesn't seem to
-            #care about having an extra space in front
-            #of the filters. How odd.
+            # interestingly, Shodan's API doesn't seem to
+            # care about having an extra space in front
+            # of the filters. How odd.
             params0 = "has_screenshot:\"true\"" + params0
             print(params0)
             searchdict =  shodan.search(params0,page=1,limit=1,minify=False)
@@ -305,8 +246,8 @@ async def on_message(message):
                 optsimage = searchbuffer0[0].get('opts')
                 screenimage = optsimage.get('screenshot')
                 imagedata = screenimage.get('data')
-                #we have to export it as unicode since
-                #that's exactly what it is.
+                # we have to export it as unicode since
+                # that's exactly what it is.
                 imagedatadecode = bytes(imagedata, 'utf-8')
                 with open("screenshot_shodan1.png", "wb") as fh:
                     fh.write(base64.decodebytes(imagedatadecode))
@@ -329,17 +270,12 @@ async def on_message(message):
         embed=discord.Embed(color=0xff4d00)
         msgbuffer = message.content
         prefix = "~exploitdb "
-	#I bet this looks like another routine,
-        #huh? It's the metasploit entry except stripped down
-        #to accomodate the bits of information exploit-db
-        #has in the CVESearch entry. Eventually I'd
-        #like to get more, but this will do for now.
         print(message.content)
         msgbuffer = msgbuffer.replace(prefix, "", 1)
-	#debugging print statement
+        # debugging print statement
         print(msgbuffer)
-        #I would NOT recommend my variable naming scheme
-        #I will be fixing that within the next few patches.
+        # I would NOT recommend my variable naming scheme
+        # I will be fixing that within the next few patches.
         cvedictbuffer = cve.id(text)
         try:
             cvedictsource = cvedictbuffer.get('exploit-db')
@@ -354,14 +290,14 @@ async def on_message(message):
             embed.add_field(name=file, value=cvetitle, inline=False)
         except:
             error0 = "Error"
-            #Custom error message. Yet another thing I have to optimize.
+            # Custom error message. Yet another thing I have to optimize.
             error1 = "Vulnerability contains no exploit-db entry"
             embed.add_field(name=error0, value=error1, inline=False)
         try:
             await message.channel.send(content=None, embed=embed)
         except:
-            #oh look, Discord! Error handling just for you!
-            #I get the char limit thing, but seriously. 
+            # oh look, Discord! Error handling just for you!
+            # I get the char limit thing, but seriously.
             embed1=discord.Embed(color=0x4f4fff)
             errortitle0 = "Discord Error"
             errordesc0 = "Message breaches char limits."
@@ -372,8 +308,6 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed1)
             
     if message.content.startswith ("~shdtokens"):
-        # Getting the tokens is a bit slow. I think I'm going to implement
-        # a little 'hold on' message that gets deleted after a few seconds.
         shdtkembed=discord.Embed(color=0xff097d)
         tokenmsg = "Tokens Left:"
         sdinfobuffer2 = shodan.info()
@@ -385,11 +319,7 @@ async def on_message(message):
     if message.content == "~version":
         versionstr = "Version"
         branchstr = "Branch"
-        #the RDM's favorite block of code.
-        #all joking aside, this just gets version information
-        #stored in a string. I'm trying to think of better methods, but
-        #I digress. 
-        verembed=discord.Embed(color=0x3eb715)
+        verembed=discord.Embed(color=0x008000)
         verembed.add_field(name=versionstr, value=vernum, inline=True)
         verembed.add_field(name=branchstr, value=branch, inline=True)
         await message.channel.send(content=None, embed=verembed)
@@ -425,19 +355,8 @@ async def on_message(message):
             mserror = "CVE entry contains no msbulletin information"
             msembed.add_field(name=mserrortitle, value=mserror, inline=True)
             await message.channel.send(content=None, embed=msembed)
-    
-     if message.content.startswith ("~emergfixes"):
-        # "Emergency fixes"
-        # Otherwise known as a log for
-        # all of the error handling
-        # I've done as a result of issues with
-        # a specific dependancy or something.
 
-        fixesembed=discord.Embed(title="Fixes and News", url="https://github.com/TheComputerInside/CVEsearchbot.py/wiki/Fixes-and-news%3F", description="and suddenly... a github page dedicated to a singular issue!", color=0x0000ff)
-        fixesembed.set_footer(text="https://isitdns.com/")
-        await message.channel.send(content=None, embed=fixesembed)
 
-    
 
-#Running the discord bot        
+# Running the discord bot
 client.run(TOKEN)
