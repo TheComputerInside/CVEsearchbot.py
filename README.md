@@ -14,11 +14,10 @@ as I'm maintaining it.
 
 ### You will need the following dependancies:
 
-discord (pip install discord.py)
-
-feedparser (pip install feedparser)
-
-shodan (pip install shodan)
+discord.py and shodan:
+```
+pip install discord.py shodan
+```
 
 and pycvesearch (https://github.com/cve-search/PyCVESearch)
 
@@ -28,6 +27,5 @@ You will also need an account from https://shodan.io to use the shodan features,
 a discord bot token from https://discordapp.com/developers/applications/me in order
 for the script to work.
 
-(soon I will just make a dependency installer so you won't have to mess with this)
 
 This script uses Python 3 and should be compatible with Python 3.6+
