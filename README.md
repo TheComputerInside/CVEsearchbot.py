@@ -11,11 +11,6 @@ whilst also trying to make something useful.
 I've learned so much just doing this(especially about dictionaries), and I'll keep learning as long
 as I'm maintaining it. 
 
-Note: Unfortunately I've noticed the script acting really REALLY sluggish, and that probably means
-that there's gonna be a MASSIVE rewrite coming up to address this. I suspect it would be infinitely
-easier to implement yaspy or something specifically for the purpose of trying to speed it up as I 
-think that the entire script being loaded into memory is probably not particularly optimal. 
-Especially considering the nature of Python as it stands. 
 
 ### You will need the following dependancies:
 
