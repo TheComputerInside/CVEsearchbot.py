@@ -167,7 +167,7 @@ async def on_message(message):
         embed=discord.Embed(title="Official(™) Documentation", url="https://github.com/TheComputerInside/CVEsearchbot.py/wiki", description="Contains commands, Shodan filters, and the changelog.", color=0x008000)
         await message.channel.send(content=None, embed=embed)
 
-    if message.content.startswith ("~shodan"):
+    if message.content.startswith ("~shodan "):
 
         tokenmsg = "Tokens Left:"
         sdinfobuffer0 = shodan.info()
