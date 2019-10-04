@@ -1,4 +1,4 @@
-v0.20-experimental
+v0.20-prerelease
 
 - Removed ~feed
 - Changed ~shodan-search to ~shodan
@@ -7,23 +7,18 @@ v0.20-experimental
 - Comment cleanup
 - Removed feedreader dependency
 - Removed libraries that are no longer required.
+- Discord error handling has been moved to a def statement
+- Error handling for fetching CVE data (e.g. exploit-db data)
+  has been moved to a def statement. 
+- Changed the "ready" status to "Discord Bot Ready!"
 
-==========Experimental changes:
 
-% Discord error handling has been 
-  moved to a ```def``` statement
+==New changes
 
-% Error handling for fetching
-  CVE data (e.g. exploit-db data)
-  has been moved to a ```def```
-  statement. 
+- Fixed a bunch of the error handling changes, more
+specifically, they weren't being [await]ed
+- Fixed some inheritence errors.
 
-% Changed the "ready" status to
-  "Discord Bot Ready!"
 
-All experimental changes are
-expected to adversely affect
-the stability of the script. 
-
-Please take care when using
-this version.
+Full release, v0.20, will contain the pastebin changes
+to counter discord's 2000 character limit.

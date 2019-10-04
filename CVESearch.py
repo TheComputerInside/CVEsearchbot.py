@@ -20,7 +20,7 @@ MAX_SCREENS = 1
 
 # manual version numbers
 vernum= "0.20"
-branch = "Experimental"
+branch = "current"
 
 
 # library declarations
@@ -74,7 +74,7 @@ async def on_message(message):
             
             await message.channel.send(content=None, embed=embed)
         except Exception as errthesequel:
-            print("An error has occured (likely something to do with the CVE exception error handling firing?)")
+            print("An error has occurred (likely something to do with the CVE exception error handling firing?)")
             print("Ignoring, but please keep the following error around:")
             print(errthesequel)
                     
@@ -144,12 +144,14 @@ async def on_message(message):
             embed.add_field(name=text, value=var6, inline=False)
             embed.add_field(name=desc, value=var7, inline=False)
             embed.add_field(name=reli, value=var8, inline=False)
+            try:
+                await message.channel.send(content=None, embed=embed)
+            except:
+                await discordcharerror(message, text)
         except:
-            cveNoDataError(message)
-        try:
-            await message.channel.send(content=None, embed=embed)
-        except:
-            discordcharerror(message, text)
+            await cveNoDataError(message)
+            print("Metasploit: No Data")
+
 
     if message.content == "~docs":
 
@@ -198,7 +200,7 @@ async def on_message(message):
                         fh.write(base64.decodebytes(image3))
                     
                 except:
-                    print("no screenshot")
+                    print("Shodan: No Screenshot")
                 else:
                     await message.channel.send(file=discord.File('screenshot.png'))
             except:
@@ -286,7 +288,7 @@ async def on_message(message):
             print ("exploit-db: No Data")
 
     if message.content.startswith("~shdtokens"):
-        shdtkembed=discord.Embed(color=0xff097d)
+        shdtkembed=discord.Embed(color=0x00b72e)
         tokenmsg = "Tokens Left:"
         sdinfobuffer2 = shodan.info()
         tokensleft = sdinfobuffer2.get('query_credits')
@@ -329,9 +331,11 @@ async def on_message(message):
             await message.channel.send(content=None, embed=msembed)
         except:
             cveNoDataError(message)
-
+            print("msbulletin: No Data")
 
 async def discordcharerror(message, text):
+    # oh look, Discord! Error handling just for you!
+    # I get the char limit thing, but seriously.
     embed1 = discord.Embed(color=0x4f4fff)
     errortitle0 = "Discord Error"
     errordesc0 = "Message breaches char limits."
@@ -339,6 +343,7 @@ async def discordcharerror(message, text):
     errordesc1 = "https://cve.circl.lu/cve/" + text
     embed1.add_field(name=errortitle0, value=errordesc0, inline=False)
     embed1.add_field(name=errortitle1, value=errordesc1, inline=False)
+    embed1.set_footer(text="Soon, this will return a pastebin link.")
     await message.channel.send(content=None, embed=embed1)
 
 
