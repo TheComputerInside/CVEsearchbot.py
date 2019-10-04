@@ -7,3 +7,18 @@ v0.20-prerelease
 - Comment cleanup
 - Removed feedreader dependency
 - Removed libraries that are no longer required.
+- Discord error handling has been moved to a def statement
+- Error handling for fetching CVE data (e.g. exploit-db data)
+  has been moved to a def statement. 
+- Changed the "ready" status to "Discord Bot Ready!"
+
+
+==New changes
+
+- Fixed a bunch of the error handling changes, more
+specifically, they weren't being [await]ed
+- Fixed some inheritence errors.
+
+
+Full release, v0.20, will contain the pastebin changes
+to counter discord's 2000 character limit.
