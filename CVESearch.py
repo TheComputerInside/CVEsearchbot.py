@@ -4,6 +4,7 @@ from shodan import Shodan
 import base64
 import json
 
+
 # The Computer Inside presents:
 # The CVESearch.py discord bot!
 #      (name not final)
@@ -13,33 +14,32 @@ import json
 
 
 # minimum and maximum screenshots we
-# want shodan to send
+# want Shodan to send.
 MIN_SCREENS = 1
 MAX_SCREENS = 1
 
 # manual version numbers
 vernum= "0.20"
-branch = "current"
+branch = "Experimental"
 
 
 # library declarations
 client = discord.Client()
 cve = CVESearch()
+
+# Shodan token goes here
 shodan = Shodan('')
-
-
 
 
 # discord bot token goes here
 TOKEN = ''
 
 
-#giving some notification that the discord bot is ready 
+# giving some notification that the discord bot is ready.
 @client.event
 async def on_ready():
-    print("rdy!!")
-    
-    
+    print("Discord Bot: Ready!")
+
 
 @client.event
 async def on_message(message):
@@ -47,8 +47,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-
-    if message.content.startswith ("~cvesearch"):
+    if message.content.startswith("~cvesearch"):
         embed=discord.Embed()
         text = message.content
         prefix = "~cvesearch "
@@ -66,7 +65,7 @@ async def on_message(message):
             var4 = cve.id(text)
             var5 = var4.get('summary')
         except Exception as err:
-            cveerrorembed=discord.Embed(title="cve.circl.lu error", description="an error has occured in getting details for the specified CVE.", color=0xff0000)
+            cveerrorembed=discord.Embed(title="cve.circl.lu error", description="An error has occured in getting details for the specified CVE.", color=0xff0000)
             cveerrorembed.set_footer(text=err)
             await message.channel.send(content=None, embed=cveerrorembed)
 
@@ -79,7 +78,7 @@ async def on_message(message):
             print("Ignoring, but please keep the following error around:")
             print(errthesequel)
                     
-    if message.content.startswith ("~help"):
+    if message.content.startswith("~help"):
         text = message.content
         prefix = "~help "
         text = text.replace(prefix, "", 1)
@@ -111,7 +110,7 @@ async def on_message(message):
             helpembed.add_field(name=text, value=helpdict_sent, inline=False)
             await message.channel.send(content=None, embed=helpembed)
         
-    if message.content.startswith ("~metasploit"):
+    if message.content.startswith("~metasploit"):
         # As of version 0.12, all discord embeds will contain colours
         # to help spot differences between modules.
         embed=discord.Embed(color=0x4f4fff)
@@ -146,28 +145,18 @@ async def on_message(message):
             embed.add_field(name=desc, value=var7, inline=False)
             embed.add_field(name=reli, value=var8, inline=False)
         except:
-            error0 = "Error"
-            error1 = "Vulnerability contains no metasploit entry"
-            embed.add_field(name=error0, value=error1, inline=False)
+            cveNoDataError(message)
         try:
             await message.channel.send(content=None, embed=embed)
         except:
-            embed1=discord.Embed(color=0x4f4fff)
-            error2 = "Discord Error"
-            error3 = "Message breaches char limits."
-            error4 = "Please use this link to the CVE entry instead:"
-            error5 = "https://cve.circl.lu/cve/" + text
-            embed1.add_field(name=error2, value=error3, inline=False)
-            embed1.add_field(name=error4, value=error5, inline=False)
-
-            await message.channel.send(content=None, embed=embed1)
+            discordcharerror(message, text)
 
     if message.content == "~docs":
 
         embed=discord.Embed(title="Official(™) Documentation", url="https://github.com/TheComputerInside/CVEsearchbot.py/wiki", description="Contains commands, Shodan filters, and the changelog.", color=0x008000)
         await message.channel.send(content=None, embed=embed)
 
-    if message.content.startswith ("~shodan "):
+    if message.content.startswith("~shodan "):
 
         tokenmsg = "Tokens Left:"
         sdinfobuffer0 = shodan.info()
@@ -225,7 +214,7 @@ async def on_message(message):
             embed.add_field(name=errortitle, value=errormsg, inline=True)
             await message.channel.send(content=None, embed=embed)
 
-    if message.content.startswith ("~shodansafari"):
+    if message.content.startswith("~shodansafari"):
         tokenmsg = "Tokens Left:"
         sdinfobuffer1 = shodan.info()
         tokensleft = sdinfobuffer1.get('query_credits')
@@ -266,7 +255,7 @@ async def on_message(message):
             embed.add_field(name=errortitle, value=errormsg, inline=True)
             await message.channel.send(content=None, embed=embed)
 
-    if message.content.startswith ("~exploitdb"):
+    if message.content.startswith("~exploitdb"):
         embed=discord.Embed(color=0xff4d00)
         msgbuffer = message.content
         prefix = "~exploitdb "
@@ -276,38 +265,27 @@ async def on_message(message):
         print(msgbuffer)
         # I would NOT recommend my variable naming scheme
         # I will be fixing that within the next few patches.
-        cvedictbuffer = cve.id(text)
         try:
+            cvedictbuffer = cve.id(text)
             cvedictsource = cvedictbuffer.get('exploit-db')
             file = 'File:'
             src = 'Source:'
-            title = 'Title:'  
+            title = 'Title:'
             cvefile = cvedictsource[1].get('file')
             cvesrc = cvedictsource[1].get('source')
             cvetitle = cvedictsource[1].get('title')
             embed.add_field(name=title, value=cvetitle, inline=False)
             embed.add_field(name=src, value=cvesrc, inline=False)
             embed.add_field(name=file, value=cvetitle, inline=False)
+            try:
+                await message.channel.send(content=None, embed=embed)
+            except:
+                await discordcharerror(message, text)
         except:
-            error0 = "Error"
-            # Custom error message. Yet another thing I have to optimize.
-            error1 = "Vulnerability contains no exploit-db entry"
-            embed.add_field(name=error0, value=error1, inline=False)
-        try:
-            await message.channel.send(content=None, embed=embed)
-        except:
-            # oh look, Discord! Error handling just for you!
-            # I get the char limit thing, but seriously.
-            embed1=discord.Embed(color=0x4f4fff)
-            errortitle0 = "Discord Error"
-            errordesc0 = "Message breaches char limits."
-            errortitle1 = "Please use this link to the CVE entry instead:"
-            errordesc1 = "https://cve.circl.lu/cve/" + text
-            embed1.add_field(name=errortitle0, value=errordesc0, inline=False)
-            embed1.add_field(name=errortitle1, value=errordesc1, inline=False)
-            await message.channel.send(content=None, embed=embed1)
-            
-    if message.content.startswith ("~shdtokens"):
+            await cveNoDataError(message)
+            print ("exploit-db: No Data")
+
+    if message.content.startswith("~shdtokens"):
         shdtkembed=discord.Embed(color=0xff097d)
         tokenmsg = "Tokens Left:"
         sdinfobuffer2 = shodan.info()
@@ -319,12 +297,12 @@ async def on_message(message):
     if message.content == "~version":
         versionstr = "Version"
         branchstr = "Branch"
-        verembed=discord.Embed(color=0x008000)
+        verembed=discord.Embed(color=0xd0067a)
         verembed.add_field(name=versionstr, value=vernum, inline=True)
         verembed.add_field(name=branchstr, value=branch, inline=True)
         await message.channel.send(content=None, embed=verembed)
 
-    if message.content.startswith ("~msbulletin"):
+    if message.content.startswith("~msbulletin"):
         msgbuffer = message.content
         prefix = "~msbulletin "
         msgbuffer = msgbuffer.replace(prefix, "", 1)
@@ -350,13 +328,26 @@ async def on_message(message):
 
             await message.channel.send(content=None, embed=msembed)
         except:
-            msembed=discord.Embed(color=0x00d910)
-            mserrortitle = "Error"
-            mserror = "CVE entry contains no msbulletin information"
-            msembed.add_field(name=mserrortitle, value=mserror, inline=True)
-            await message.channel.send(content=None, embed=msembed)
+            cveNoDataError(message)
 
 
+async def discordcharerror(message, text):
+    embed1 = discord.Embed(color=0x4f4fff)
+    errortitle0 = "Discord Error"
+    errordesc0 = "Message breaches char limits."
+    errortitle1 = "Please use this link to the CVE entry instead:"
+    errordesc1 = "https://cve.circl.lu/cve/" + text
+    embed1.add_field(name=errortitle0, value=errordesc0, inline=False)
+    embed1.add_field(name=errortitle1, value=errordesc1, inline=False)
+    await message.channel.send(content=None, embed=embed1)
+
+
+async def cveNoDataError(message):
+    cveembed = discord.Embed(color=0x4f4fff)
+    errortitle0 = "Error"
+    errordesc0 = "CVE returned no data"
+    cveembed.add_field(name=errortitle0, value=errordesc0, inline=False)
+    await message.channel.send(content=None, embed=cveembed)
 
 # Running the discord bot
 client.run(TOKEN)
